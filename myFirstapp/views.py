@@ -1,12 +1,23 @@
-from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
-# Create your views here.
+class MyView(APIView):
+    def get(self, *args, **kwargs):
+        return Response({'msg': 'Hello from GET'})
 
 
-def hello(request):
-    return render(request, 'hello.html')
+    def post(self, *args, **kwargs):
+        return Response({'msg': 'Hello from POST'})
 
 
-def users(request, name):
-    return render(request, 'users.html', {'user': name})
+    def put(self, *args, **kwargs):
+        return Response({'msg': 'Hello from PUT'})
+
+
+    def patch(self, *args, **kwargs):
+        return Response({'msg': 'Hello from PATCH'})
+
+
+    def delete(self, *args, **kwargs):
+        return Response({'msg': 'Hello from DELETE'})
