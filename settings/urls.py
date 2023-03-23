@@ -1,4 +1,4 @@
-"""djangoProject URL Configuration
+"""settings URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from myFirstapp.views import MyView
+from cars.views import CarsListCreateView, CarsRetrieveUpdatesDeleteView
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', MyView.as_view())
+    path('cars', CarsListCreateView.as_view()),
+    path('cars/<int:pk>', CarsRetrieveUpdatesDeleteView.as_view())
 ]
