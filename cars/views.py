@@ -1,58 +1,24 @@
-from django.forms import model_to_dict
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from .models import CarModel
-from .serializers import CarSerializer, Car2Serializer
+from .serializers import CarSerializer
 
 
-class CarsListCreateView(APIView):
-    def get(self, *args, **kwargs):
-        # cars = CarModel.objects.filter(year__gte='2015-06-06')
-        # cars = CarModel.objects.filter(year__lte='2015-06-06')
-        # cars = CarModel.objects.filter(year__exact='2015-06-06')
-        # cars = CarModel.objects.filter(year__year='2015-06-06')
-        cars = CarModel.objects.all()
-        serializer = CarSerializer(instance=cars, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
+class CarsListCreateView(ListCreateAPIView):
+    serializer_class = CarSerializer
+    queryset = CarModel.objects.all()
 
-    def post(self, *args, **kwargs):
-        data = self.request.data
-        serializer = CarSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status.HTTP_200_OK)
+    def get_queryset(self):
+        year = self.request.query_params.get('year')
+        auto_park_id = self.request.query_params.get('autoParkId')
+        qs = self.queryset.all()
+        if year:
+            qs = qs.filter(year__gte=year)
+        if auto_park_id:
+            qs = qs.filter(autopark_id=auto_park_id)
+        return qs
 
 
-class CarsRetrieveUpdatesDeleteView(APIView):
-    def get(self, *args, **kwargs):
-        pk = kwargs.get('pk')
-        is_exists = CarModel.objects.filter(pk=pk).exists()
-        if not is_exists:
-            return Response(f'Car is id:{pk} not found', status.HTTP_404_NOT_FOUND)
-        car = CarModel.objects.get(pk=pk)
-        serializer = Car2Serializer(instance=car)
-        return Response(serializer.data)
-
-    def patch(self, *args, **kwargs):
-        pk = kwargs.get('pk')
-        data = self.request.data
-        is_exists = CarModel.objects.filter(pk=pk).exists()
-        if not is_exists:
-            return Response(f'Car is id:{pk} not found', status.HTTP_404_NOT_FOUND)
-        car = CarModel.objects.get(pk=pk)
-        serializer = CarSerializer(instance=car, data=data, partial=True)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-        serializer.save()
-        return Response(serializer.data, status.HTTP_200_OK)
-
-    def delete(self, *args, **kwargs):
-        pk = kwargs.get('pk')
-        is_exists = CarModel.objects.filter(pk=pk).exists()
-        if not is_exists:
-            return Response(f'User is id:{pk} not found', status.HTTP_404_NOT_FOUND)
-        car = CarModel.objects.get(pk=pk)
-        car.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class CarsRetrieveUpdatesDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = CarModel.objects.all()
+    serializer_class = CarSerializer

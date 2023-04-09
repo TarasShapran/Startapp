@@ -7,10 +7,9 @@ class CarSerializer(ModelSerializer):
     class Meta:
         model = CarModel
         fields = '__all__'
-
-    def validate(self, date):
-
-        return super().validate(date)
+        extra_kwargs = {
+            'autopark': {'read_only': True},
+        }
 
 
 class Car2Serializer(ModelSerializer):

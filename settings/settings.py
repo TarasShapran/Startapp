@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'cars',
-    'aiplane'
+    'aiplane',
+    'users',
+    'autopark'
 ]
 
 MIDDLEWARE = [
